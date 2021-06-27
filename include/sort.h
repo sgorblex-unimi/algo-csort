@@ -16,4 +16,13 @@ int mgSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 // QuickSort
 int qkSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
 
+// HeapSort
+int hpSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
+
+// BucketSort
+// int bkSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
+
+// RadixSort
+// int rxSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
+
 #endif

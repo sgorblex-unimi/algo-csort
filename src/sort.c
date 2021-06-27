@@ -6,6 +6,7 @@
 /*
  * TODO
  * - memcpy optimization in insertionSort
+ * - quickSplit: change return value (swap needs check)
  * - better file management(?)
  */
 
@@ -137,5 +138,43 @@ static void quickSort(void *data, int esize, int i, int f, int (*compare)(const 
 
 int qkSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2)) {
 	quickSort(data, esize, 0, size, compare);
+	return 0;
+}
+
+static int fixHeap(void *data, int v, int l, int esize, int (*compare)(const void *key1, const void *key2)) {
+	void *tmp;
+	if ((tmp = malloc(esize)) == NULL)
+		return -1;
+	memcpy(tmp, data + esize * v, esize);
+	bool fixing = true;
+	do {
+		int u = 2 * v + 1;
+		if (u >= l)
+			fixing = false;
+		else {
+			if (u + 1 < l && compare(data + esize * (u + 1), data + esize * u) > 0)
+				u++;
+			if (compare(data + esize * u, tmp) > 0) {
+				memcpy(data + esize * v, data + esize * u, esize);
+				v = u;
+			} else
+				fixing = false;
+		}
+	} while (fixing);
+	memcpy(data + esize * v, tmp, esize);
+	free(tmp);
+	return 0;
+}
+
+int hpSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2)) {
+	for (int i = size / 2; i >= 0; i--)
+		if (fixHeap(data, i, size, esize, compare))
+			return -1;
+	for (int l = size - 1; l >= 1; l--) {
+		if (swap(data, esize, 0, l))
+			return -1;
+		if (fixHeap(data, 0, l, esize, compare))
+			return -1;
+	}
 	return 0;
 }
