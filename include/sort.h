@@ -13,4 +13,7 @@ int bbSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 // MergeSort
 int mgSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
 
+// QuickSort
+int qkSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
+
 #endif

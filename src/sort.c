@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * TODO
+ * - memcpy optimization in insertionSort
+ * - better file management(?)
+ */
+
 static int swap(void *data, int esize, int i, int j) {
 	void *tmp;
 	if ((tmp = malloc(esize)) == NULL)
@@ -97,4 +103,39 @@ int mgSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 	int retVal = mergeSort(data, esize, 0, size, auxArr, compare);
 	free(auxArr);
 	return retVal;
+}
+
+static int quickSplit(void *data, int esize, int p, int r, int (*compare)(const void *key1, const void *key2)) {
+	int l = p;
+	void *pAddr = data + p * esize;
+	while (l < r) {
+		do
+			r--;
+		while (compare(data + r * esize, pAddr) > 0);
+		do
+			l++;
+		while (l < r && compare(data + l * esize, pAddr) <= 0);
+		if (l < r)
+			swap(data, esize, l, r);
+	}
+	swap(data, esize, p, r);
+	return r;
+}
+
+static void quickSort(void *data, int esize, int i, int f, int (*compare)(const void *key1, const void *key2)) {
+	while (f - i > 1) {
+		int m = quickSplit(data, esize, i, f, compare);
+		if (m - i < f - m) {
+			quickSort(data, esize, i, m, compare);
+			i = m + 1;
+		} else {
+			quickSort(data, esize, m + 1, f, compare);
+			f = m;
+		}
+	}
+}
+
+int qkSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2)) {
+	quickSort(data, esize, 0, size, compare);
+	return 0;
 }
