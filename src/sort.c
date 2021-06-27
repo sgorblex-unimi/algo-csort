@@ -10,6 +10,7 @@ static int swap(void *data, int esize, int i, int j) {
 	memcpy(tmp, data + esize * i, esize);
 	memcpy(data + esize * i, data + esize * j, esize);
 	memcpy(data + esize * j, tmp, esize);
+	free(tmp);
 	return 0;
 }
 
@@ -38,6 +39,7 @@ int isSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 		}
 		memcpy(data + esize * (j + 1), key, esize);
 	}
+	free(key);
 	return 0;
 }
 
@@ -55,4 +57,44 @@ int bbSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 		i++;
 	} while (haveSwapped && i < size);
 	return 0;
+}
+
+static void merge(void *data, int esize, int i, int m, int f, void *auxArr, int (*compare)(const void *key1, const void *key2)) {
+	int i1, i2, k;
+	for (i1 = i, i2 = m, k = 0; i1 < m && i2 < f; k++) {
+		void *data1 = data + i1 * esize, *data2 = data + i2 * esize;
+		if (compare(data1, data2) < 0) {
+			memcpy(auxArr + k * esize, data1, esize);
+			i1++;
+		} else {
+			memcpy(auxArr + k * esize, data2, esize);
+			i2++;
+		}
+	}
+	if (i1 < m)
+		memcpy(auxArr + k * esize, data + i1 * esize, esize * (m - i1));
+	else
+		memcpy(auxArr + k * esize, data + i2 * esize, esize * (f - i2));
+	memcpy(data + i * esize, auxArr, esize * (f - i));
+}
+
+static int mergeSort(void *data, int esize, int i, int f, void *auxArr, int (*compare)(const void *key1, const void *key2)) {
+	if (f - i > 1) {
+		int m = (i + f) / 2;
+		if (mergeSort(data, esize, i, m, auxArr, compare))
+			return -1;
+		if (mergeSort(data, esize, m, f, auxArr, compare))
+			return -1;
+		merge(data, esize, i, m, f, auxArr, compare);
+	}
+	return 0;
+}
+
+int mgSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2)) {
+	void *auxArr;
+	if ((auxArr = malloc(size * esize)) == NULL)
+		return -1;
+	int retVal = mergeSort(data, esize, 0, size, auxArr, compare);
+	free(auxArr);
+	return retVal;
 }
