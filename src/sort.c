@@ -48,7 +48,7 @@ int bbSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 	bool haveSwapped;
 	do {
 		haveSwapped = false;
-		for (int j = 1; j < size - i; j++)
+		for (int j = 1; j <= size - i; j++)
 			if (compare(data + esize * j, data + esize * (j - 1)) < 0) {
 				if (swap(data, esize, j, j - 1))
 					return -1;
