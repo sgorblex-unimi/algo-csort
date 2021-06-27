@@ -7,4 +7,7 @@ int slSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 // InsertionSort
 int isSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
 
+// BubbleSort
+int bbSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2));
+
 #endif

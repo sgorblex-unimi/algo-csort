@@ -1,5 +1,5 @@
 #include "../include/sort.h"
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -20,7 +20,8 @@ int slSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 		for (int j = i + 1; j < size; j++)
 			if (compare(data + esize * j, data + esize * minIndex) < 0)
 				minIndex = j;
-		swap(data, esize, i, minIndex);
+		if (swap(data, esize, i, minIndex))
+			return -1;
 	}
 	return 0;
 }
@@ -37,5 +38,21 @@ int isSort(void *data, int size, int esize, int (*compare)(const void *key1, con
 		}
 		memcpy(data + esize * (j + 1), key, esize);
 	}
+	return 0;
+}
+
+int bbSort(void *data, int size, int esize, int (*compare)(const void *key1, const void *key2)) {
+	int i = 1;
+	bool haveSwapped;
+	do {
+		haveSwapped = false;
+		for (int j = 1; j < size - i; j++)
+			if (compare(data + esize * j, data + esize * (j - 1)) < 0) {
+				if (swap(data, esize, j, j - 1))
+					return -1;
+				haveSwapped = true;
+			}
+		i++;
+	} while (haveSwapped && i < size);
 	return 0;
 }
